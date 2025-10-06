@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 
 namespace Company.Wageh.BLL.Repositories
 {
-    internal class DepartmentRepository : IDepartmentRepository
+    public class DepartmentRepository : IDepartmentRepository
     {
         private readonly CompanyDBContext _Context;
         public DepartmentRepository(CompanyDBContext context) 

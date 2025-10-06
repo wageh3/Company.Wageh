@@ -1,3 +1,8 @@
+using Company.Wageh.BLL.Interfaces;
+using Company.Wageh.BLL.Repositories;
+using Company.Wageh.DAL.Data.Contexts;
+using Microsoft.EntityFrameworkCore;
+
 namespace Company.Wageh.PL
 {
     public class Program
@@ -8,6 +13,12 @@ namespace Company.Wageh.PL
 
             // Add services to the container.
             builder.Services.AddControllersWithViews();
+            builder.Services.AddScoped<IDepartmentRepository, DepartmentRepository>();
+
+            builder.Services.AddDbContext<CompanyDBContext>(options =>
+            {
+                options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection"));
+            });
 
             var app = builder.Build();
 
