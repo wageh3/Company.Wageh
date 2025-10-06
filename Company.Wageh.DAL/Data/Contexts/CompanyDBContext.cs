@@ -10,7 +10,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Company.Wageh.DAL.Data.Contexts
 {
-    internal class CompanyDBContext : DbContext
+    public class CompanyDBContext : DbContext
     {
         public CompanyDBContext(DbContextOptions<CompanyDBContext> options) : base(options)
         {
