@@ -66,19 +66,49 @@ namespace Company.Wageh.PL.Controllers
         [HttpGet]
         public IActionResult Edit(int? id)
         {
-            return Details(id, "Edit");
+            if (id is null) return BadRequest("Invalid id");
+            var employee = _employeeRepository.Get(id.Value);
+            if (employee is null)
+                return NotFound(new { StatusCode = 404, message = $"Employee with id {id} is not Found!" });
+            var employeeDto = new CreateEmpDto()
+            {
+                Name = employee.Name,
+                Age = employee.Age,
+                Address = employee.Address,
+                CreateAt = employee.CreateAt,
+                HiringDate = employee.HiringDate,
+                Email = employee.Email,
+                IsActive = employee.IsActive,
+                IsDeleted = employee.IsDeleted,
+                Phone = employee.Phone,
+                Salary = employee.Salary,
+            };
+            return View(employeeDto);
         }
 
         [HttpPost]
         [ValidateAntiForgeryToken] // btmna3 ayy Request gay mn Tool khargya (msmo7 bs b l Requests l btegy mn l web)
-        public IActionResult Edit([FromRoute] int id, Employee Emp)
+        public IActionResult Edit([FromRoute] int id, CreateEmpDto Emp)
         {
 
             if (ModelState.IsValid)
             {
-                if (id != Emp.Id) return BadRequest();
-
-                var count = _employeeRepository.Update(Emp);
+                //if (id != Emp.Id) return BadRequest();
+                var employee = new Employee()
+                {
+                    Id = id,
+                    Name = Emp.Name,
+                    Age = Emp.Age,
+                    Address = Emp.Address,
+                    CreateAt = Emp.CreateAt,
+                    HiringDate = Emp.HiringDate,
+                    Email = Emp.Email,
+                    IsActive = Emp.IsActive,
+                    IsDeleted = Emp.IsDeleted,
+                    Phone = Emp.Phone,
+                    Salary = Emp.Salary,
+                };
+                var count = _employeeRepository.Update(employee);
 
                 if (count > 0)
                 {
