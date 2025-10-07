@@ -46,35 +46,64 @@ namespace Company.Wageh.PL.Controllers
         }
 
         [HttpGet]
-        public IActionResult Details(int id)
+        public IActionResult Details(int? id , string ViewName = "Details")
         {
-            Department dep = _departmentRepo.Get(id);
+            if(id is null) 
+                return BadRequest("Invalid Id");
+            Department dep = _departmentRepo.Get(id.Value);
+            if (dep is null) 
+                return NotFound(new { StatusCode = 404, message = $"Department with id {id} is not Found!" });
             return View(dep);
         }
+
         [HttpGet]
-        public IActionResult Edit(int id)
+        public IActionResult Edit(int? id)
         {
-            var department = _departmentRepo.Get(id);
-
-            return View(department);
+            //if (id is null)
+            //    return BadRequest("Invalid Id");
+            //Department? dep = _departmentRepo.Get(id.Value);
+            //if (dep is null)
+            //    return NotFound(new { StatusCode = 404, message = $"Department with id {id} is not Found!" });
+            return Details(id , "Edit");
         }
-        [HttpPost]
-        public IActionResult Edit(Department dep)
-        {
 
+        [HttpPost]
+        [ValidateAntiForgeryToken] // btmna3 ayy Request gay mn Tool khargya (msmo7 bs b l Requests l btegy mn l web)
+        public IActionResult Edit([FromRoute]int id ,Department dep)
+        {
+            
             if (ModelState.IsValid)
             {
-                _departmentRepo.Update(dep);
-                return RedirectToAction("Index");
+                if (id != dep.Id) return BadRequest();
+                
+                var count = _departmentRepo.Update(dep);
+
+                if (count > 0)
+                {
+                    return RedirectToAction("Index");
+                }
             }
             return View(dep);
         }
-        
-        public IActionResult Delete(int id)
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public IActionResult Delete(Department model)
         {
-            Department dep = _departmentRepo.Get(id);
+            Department dep = _departmentRepo.Get(model.Id);
             _departmentRepo.Delete(dep);
             return RedirectToAction("Index");
+        }
+
+        [HttpGet]
+        public IActionResult Delete(int? id)
+        {
+            //if (id is null)
+            //    return BadRequest("Invalid Id");
+            //Department? dep = _departmentRepo.Get(id.Value);
+            //if (dep is null)
+            //    return NotFound(new { StatusCode = 404, message = $"Department with id {id} is not Found!" });
+            return Details(id,"Delete");
         }
     }
 }
