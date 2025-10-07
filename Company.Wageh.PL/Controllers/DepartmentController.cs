@@ -1,6 +1,7 @@
 ﻿using Company.PL.Dto;
 using Company.Wageh.BLL.Interfaces;
 using Company.Wageh.DAL.Model;
+using Humanizer;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Company.Wageh.PL.Controllers
@@ -59,24 +60,38 @@ namespace Company.Wageh.PL.Controllers
         [HttpGet]
         public IActionResult Edit(int? id)
         {
-            //if (id is null)
-            //    return BadRequest("Invalid Id");
-            //Department? dep = _departmentRepo.Get(id.Value);
-            //if (dep is null)
-            //    return NotFound(new { StatusCode = 404, message = $"Department with id {id} is not Found!" });
-            return Details(id , "Edit");
+            if (id is null)
+                return BadRequest("Invalid Id");
+            var dep = _departmentRepo.Get(id.Value);
+            if (dep is null)
+                return NotFound(new { StatusCode = 404, message = $"Department with id {id} is not Found!" });
+            var department = new CreateDepDto()
+            {
+                Code = dep.Code,
+                Name = dep.Name,
+                CreateAt = dep.CreateAt,
+            };
+          
+            return View(department);
         }
 
         [HttpPost]
         [ValidateAntiForgeryToken] // btmna3 ayy Request gay mn Tool khargya (msmo7 bs b l Requests l btegy mn l web)
-        public IActionResult Edit([FromRoute]int id ,Department dep)
+        public IActionResult Edit([FromRoute]int id ,CreateDepDto dep)
         {
             
             if (ModelState.IsValid)
             {
-                if (id != dep.Id) return BadRequest();
-                
-                var count = _departmentRepo.Update(dep);
+                //if (id != dep.Id) return BadRequest();
+                var department = new Department()
+                {
+                    Id = id,
+                    Code = dep.Code,
+                    Name = dep.Name,
+                    CreateAt = dep.CreateAt,
+                };
+               
+                var count = _departmentRepo.Update(department);
 
                 if (count > 0)
                 {
@@ -102,8 +117,8 @@ namespace Company.Wageh.PL.Controllers
             //if (id is null)
             //    return BadRequest("Invalid Id");
             //Department? dep = _departmentRepo.Get(id.Value);
-            //if (dep is null)
-            //    return NotFound(new { StatusCode = 404, message = $"Department with id {id} is not Found!" });
+        //if (dep is null)
+        //    return NotFound(new { StatusCode = 404, message = $"Department with id {id} is not Found!" });
             return Details(id,"Delete");
         }
     }
