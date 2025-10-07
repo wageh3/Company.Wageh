@@ -16,7 +16,10 @@ namespace Company.Wageh.BLL.Repositories
         {
             _Context = context;
         }
-
+         public IEnumerable<Employee> GetAll()
+                {
+                    throw new NotImplementedException();
+                }
         public int Add(Department model)
         {
             _Context.Departments.Add(model);
