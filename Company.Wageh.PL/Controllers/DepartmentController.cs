@@ -50,7 +50,7 @@ namespace Company.Wageh.PL.Controllers
         {
             if(id is null) 
                 return BadRequest("Invalid Id");
-            Department dep = _departmentRepo.Get(id.Value);
+            Department? dep = _departmentRepo.Get(id.Value);
             if (dep is null) 
                 return NotFound(new { StatusCode = 404, message = $"Department with id {id} is not Found!" });
             return View(dep);
@@ -90,7 +90,8 @@ namespace Company.Wageh.PL.Controllers
         [ValidateAntiForgeryToken]
         public IActionResult Delete(Department model)
         {
-            Department dep = _departmentRepo.Get(model.Id);
+            Department? dep = _departmentRepo.Get(model.Id);
+            if (dep is null) return BadRequest();
             _departmentRepo.Delete(dep);
             return RedirectToAction("Index");
         }
