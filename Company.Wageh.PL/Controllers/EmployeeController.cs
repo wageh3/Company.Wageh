@@ -16,10 +16,19 @@ namespace Company.Wageh.PL.Controllers
             _employeeRepository = employeeRepository;
             _departmentRepository = departmentRepository;
         }
-        public IActionResult Index()
+        public IActionResult Index(string? SearchInput)
         {
-            var employee = _employeeRepository.GetAll();
-            return View(employee);
+            IEnumerable<Employee> employee;
+            if (SearchInput == null)
+            {
+                 employee = _employeeRepository.GetAll();
+            }
+            else
+            {
+                employee = _employeeRepository.GetByName(SearchInput);
+            }
+
+                return View(employee);
         }
 
         [HttpGet]
