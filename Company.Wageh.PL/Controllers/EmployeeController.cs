@@ -46,6 +46,7 @@ namespace Company.Wageh.PL.Controllers
                 int Count = _employeeRepository.Add(employee);
                 if (Count > 0)
                 {
+                    TempData["Message"] = "Employee is Added Successfully !";
                     return RedirectToAction("Index");
                 }
             }
