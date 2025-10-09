@@ -19,6 +19,8 @@ namespace Company.Wageh.DAL.Model
         public bool IsActive { get; set; }
         public DateTime HiringDate { get; set; }
         public DateTime CreateAt { get; set; }
+        public int? DepartmentId { get; set; }
+        public Department Department { get; set; }
 
     }
 }
