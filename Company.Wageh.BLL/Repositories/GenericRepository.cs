@@ -1,6 +1,7 @@
 ﻿using Company.Wageh.BLL.Interfaces;
 using Company.Wageh.DAL.Data.Contexts;
 using Company.Wageh.DAL.Model;
+using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -19,6 +20,10 @@ namespace Company.Wageh.BLL.Repositories
         }
         public IEnumerable<T> GetAll()
         {
+            if(typeof(T)==typeof(Employee))
+            {
+                return (IEnumerable<T>) _context.Employees.Include(E=>E.Department).ToList();
+            }
             return _context.Set<T>().ToList();
         }
 

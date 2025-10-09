@@ -1,4 +1,5 @@
-﻿using System.ComponentModel;
+﻿using Company.Wageh.DAL.Model;
+using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
 
 namespace Company.Wageh.PL.Dto
@@ -25,5 +26,10 @@ namespace Company.Wageh.PL.Dto
         public DateTime HiringDate { get; set; }
         [DisplayName("Date of Creation")]
         public DateTime CreateAt { get; set; }
+        [DisplayName("Department")]
+        public int? DepartmentId { get; set; }
+        public Department? Department { get; set; }
+       
+
     }
 }
