@@ -33,6 +33,7 @@
                 <th>Salary</th>
                 <th>IsActive</th>
                 <th>IsDeleted</th>
+                <th>Department</th>
                 <th>@Html.DisplayNameFor(E => E.HiringDate)</th>
                 <th>@Html.DisplayNameFor(E => E.CreateAt)</th>
                 <th>Details</th>
@@ -54,6 +55,7 @@
                     <td>@item.Salary</td>
                     <td>@item.IsActive</td>
                     <td>@item.IsDeleted</td>
+                    <td>@(item.Department?.Name ?? "No Department")</td>
                     <td>@item.HiringDate</td>
                     <td>@item.CreateAt</td>
                     <partial name="_BouttonPartialView" model="@item.Id"/>

@@ -9,10 +9,12 @@ namespace Company.Wageh.PL.Controllers
     public class EmployeeController : Controller
     {
         private readonly IEmployeeRepository _employeeRepository;
+        private readonly IDepartmentRepository _departmentRepository;
 
-        public EmployeeController(IEmployeeRepository employeeRepository)
+        public EmployeeController(IEmployeeRepository employeeRepository , IDepartmentRepository departmentRepository)
         {
             _employeeRepository = employeeRepository;
+            _departmentRepository = departmentRepository;
         }
         public IActionResult Index()
         {
@@ -23,6 +25,8 @@ namespace Company.Wageh.PL.Controllers
         [HttpGet]
         public IActionResult Create()
         {
+            var deps = _departmentRepository.GetAll();
+            ViewData["Departments"]=deps;
             return View();
         }
 
@@ -40,6 +44,7 @@ namespace Company.Wageh.PL.Controllers
                     Salary = dto.Salary,
                     IsDeleted = dto.IsDeleted,
                     IsActive = dto.IsActive,
+                    DepartmentId = dto.DepartmentId,
                     HiringDate = dto.HiringDate,
                     CreateAt = dto.CreateAt
                 };
@@ -56,6 +61,8 @@ namespace Company.Wageh.PL.Controllers
         [HttpGet]
         public IActionResult Details(int? id, string ViewName = "Details")
         {
+            var deps = _departmentRepository.GetAll();
+            ViewData["Departments"] = deps;
             if (id is null)
                 return BadRequest("Invalid Id");
             Employee? emp = _employeeRepository.Get(id.Value);
@@ -67,6 +74,8 @@ namespace Company.Wageh.PL.Controllers
         [HttpGet]
         public IActionResult Edit(int? id)
         {
+            var deps = _departmentRepository.GetAll();
+            ViewData["Departments"] = deps;
             if (id is null) return BadRequest("Invalid id");
             var employee = _employeeRepository.Get(id.Value);
             if (employee is null)
@@ -81,6 +90,7 @@ namespace Company.Wageh.PL.Controllers
                 Email = employee.Email,
                 IsActive = employee.IsActive,
                 IsDeleted = employee.IsDeleted,
+                DepartmentId = employee.DepartmentId,
                 Phone = employee.Phone,
                 Salary = employee.Salary,
             };
@@ -106,6 +116,7 @@ namespace Company.Wageh.PL.Controllers
                     Email = Emp.Email,
                     IsActive = Emp.IsActive,
                     IsDeleted = Emp.IsDeleted,
+                    DepartmentId= Emp.DepartmentId,
                     Phone = Emp.Phone,
                     Salary = Emp.Salary,
                 };

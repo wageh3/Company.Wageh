@@ -1,7 +1,9 @@
 ﻿@model Employee
 @{
     ViewData["Title"] = "Details";
+    var Departments = new SelectList(ViewData["Departments"] as IEnumerable<Department>, "Id", "Name");
 }
+
 
 <h1>Details</h1>
 
@@ -43,6 +45,14 @@
 <div class="my-3">
     <label asp-for="IsDeleted" class="form-check"></label>
     <input asp-for="IsDeleted" class="col-form-label" readonly />
+
+</div>
+<div class="my-3">
+    <div class="my-3">
+        <label asp-for="DepartmentId" class="col-form-label"></label>
+        <select asp-for="DepartmentId" asp-items="Departments" class="form-control" disabled>
+        </select>
+    </div>
 
 </div>
 <div class="my-3">
