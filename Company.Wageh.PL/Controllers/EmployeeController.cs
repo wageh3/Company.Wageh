@@ -11,7 +11,7 @@ namespace Company.Wageh.PL.Controllers
     public class EmployeeController : Controller
     {
         private readonly IEmployeeRepository _employeeRepository;
-        private readonly IDepartmentRepository _departmentRepository;
+        private readonly IDepartmentRepository _departmentRepository; //momken A3mel comment 3lshan hstakhdem l Inject fy l view
         private readonly IMapper _mapper;
 
         public EmployeeController(
@@ -43,7 +43,7 @@ namespace Company.Wageh.PL.Controllers
         public IActionResult Create()
         {
             var deps = _departmentRepository.GetAll();
-            ViewData["Departments"]=deps;
+            ViewData["Departments"] = deps;
             return View();
         }
 
