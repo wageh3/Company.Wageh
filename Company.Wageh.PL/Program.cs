@@ -1,6 +1,7 @@
 using Company.Wageh.BLL.Interfaces;
 using Company.Wageh.BLL.Repositories;
 using Company.Wageh.DAL.Data.Contexts;
+using Company.Wageh.PL.Mapping;
 using Microsoft.EntityFrameworkCore;
 
 namespace Company.Wageh.PL
@@ -20,6 +21,8 @@ namespace Company.Wageh.PL
             {
                 options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection"));
             });
+
+            builder.Services.AddAutoMapper(M => M.AddProfile(new EmployeeProfile()));
 
             var app = builder.Build();
 

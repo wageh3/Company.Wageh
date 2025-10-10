@@ -1,7 +1,9 @@
-﻿using Company.PL.Dto;
+﻿using AutoMapper;
+using Company.PL.Dto;
 using Company.Wageh.BLL.Interfaces;
 using Company.Wageh.DAL.Model;
 using Company.Wageh.PL.Dto;
+using Humanizer;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Company.Wageh.PL.Controllers
@@ -10,11 +12,17 @@ namespace Company.Wageh.PL.Controllers
     {
         private readonly IEmployeeRepository _employeeRepository;
         private readonly IDepartmentRepository _departmentRepository;
+        private readonly IMapper _mapper;
 
-        public EmployeeController(IEmployeeRepository employeeRepository , IDepartmentRepository departmentRepository)
+        public EmployeeController(
+            IEmployeeRepository employeeRepository ,
+            IDepartmentRepository departmentRepository,
+            IMapper mapper
+            )
         {
             _employeeRepository = employeeRepository;
             _departmentRepository = departmentRepository;
+            _mapper = mapper;
         }
         public IActionResult Index(string? SearchInput)
         {
@@ -43,20 +51,24 @@ namespace Company.Wageh.PL.Controllers
         {
             if (ModelState.IsValid)
             {
-                var employee = new Employee()
-                {
-                    Name = dto.Name,
-                    Age = dto.Age,
-                    Email = dto.Email,
-                    Address = dto.Address,
-                    Phone = dto.Phone,
-                    Salary = dto.Salary,
-                    IsDeleted = dto.IsDeleted,
-                    IsActive = dto.IsActive,
-                    DepartmentId = dto.DepartmentId,
-                    HiringDate = dto.HiringDate,
-                    CreateAt = dto.CreateAt
-                };
+                //Manual Mapping
+                //var employee = new Employee()
+                //{
+                //    Name = dto.Name,
+                //    Age = dto.Age,
+                //    Email = dto.Email,
+                //    Address = dto.Address,
+                //    Phone = dto.Phone,
+                //    Salary = dto.Salary,
+                //    IsDeleted = dto.IsDeleted,
+                //    IsActive = dto.IsActive,
+                //    DepartmentId = dto.DepartmentId,
+                //    HiringDate = dto.HiringDate,
+                //    CreateAt = dto.CreateAt
+                //};
+
+                //Auto Mapping
+                var employee = _mapper.Map<Employee>(dto);
                 int Count = _employeeRepository.Add(employee);
                 if (Count > 0)
                 {
@@ -89,20 +101,21 @@ namespace Company.Wageh.PL.Controllers
             var employee = _employeeRepository.Get(id.Value);
             if (employee is null)
                 return NotFound(new { StatusCode = 404, message = $"Employee with id {id} is not Found!" });
-            var employeeDto = new CreateEmpDto()
-            {
-                Name = employee.Name,
-                Age = employee.Age,
-                Address = employee.Address,
-                CreateAt = employee.CreateAt,
-                HiringDate = employee.HiringDate,
-                Email = employee.Email,
-                IsActive = employee.IsActive,
-                IsDeleted = employee.IsDeleted,
-                DepartmentId = employee.DepartmentId,
-                Phone = employee.Phone,
-                Salary = employee.Salary,
-            };
+            //var employeeDto = new CreateEmpDto()
+            //{
+            //    Name = employee.Name,
+            //    Age = employee.Age,
+            //    Address = employee.Address,
+            //    CreateAt = employee.CreateAt,
+            //    HiringDate = employee.HiringDate,
+            //    Email = employee.Email,
+            //    IsActive = employee.IsActive,
+            //    IsDeleted = employee.IsDeleted,
+            //    DepartmentId = employee.DepartmentId,
+            //    Phone = employee.Phone,
+            //    Salary = employee.Salary,
+            //};
+            var employeeDto = _mapper.Map<CreateEmpDto>(employee);
             return View(employeeDto);
         }
 
