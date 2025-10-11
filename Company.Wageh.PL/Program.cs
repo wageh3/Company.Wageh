@@ -1,3 +1,4 @@
+using Company.Wageh.BLL;
 using Company.Wageh.BLL.Interfaces;
 using Company.Wageh.BLL.Repositories;
 using Company.Wageh.DAL.Data.Contexts;
@@ -14,8 +15,9 @@ namespace Company.Wageh.PL
 
             // Add services to the container.
             builder.Services.AddControllersWithViews();
-            builder.Services.AddScoped<IDepartmentRepository, DepartmentRepository>();
-            builder.Services.AddScoped<IEmployeeRepository, EmployeeRepository>();
+            //builder.Services.AddScoped<IDepartmentRepository, DepartmentRepository>();
+            //builder.Services.AddScoped<IEmployeeRepository, EmployeeRepository>();
+            builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
 
             builder.Services.AddDbContext<CompanyDBContext>(options =>
             {

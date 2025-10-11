@@ -9,15 +9,21 @@ namespace Company.Wageh.PL.Controllers
     
     public class DepartmentController : Controller
     {
-        private readonly IDepartmentRepository _departmentRepo;
-        public DepartmentController (IDepartmentRepository departmentRepository)
+        private readonly IUnitOfWork _unitOfWork;
+
+        //private readonly IDepartmentRepository _departmentRepo;
+        public DepartmentController (
+            //IDepartmentRepository departmentRepository
+            IUnitOfWork unitOfWork
+            )
         {
-            _departmentRepo = departmentRepository;
+            _unitOfWork = unitOfWork;
+            //_departmentRepo = departmentRepository;
         }
         [HttpGet]
         public IActionResult Index()
         {
-            var Department = _departmentRepo.GetAll();
+            var Department = _unitOfWork.DepartmentRepository.GetAll();
 
             return View(Department);
         }
@@ -37,7 +43,8 @@ namespace Company.Wageh.PL.Controllers
                     Name = dto.Name,
                     CreateAt = dto.CreateAt,
                 };
-                int Count = _departmentRepo.Add(department);
+                _unitOfWork.DepartmentRepository.Add(department);
+                int Count = _unitOfWork.Complete();
                 if (Count > 0)
                 {
                     return RedirectToAction("Index");
@@ -51,7 +58,7 @@ namespace Company.Wageh.PL.Controllers
         {
             if(id is null) 
                 return BadRequest("Invalid Id");
-            Department? dep = _departmentRepo.Get(id.Value);
+            Department? dep = _unitOfWork.DepartmentRepository.Get(id.Value);
             if (dep is null) 
                 return NotFound(new { StatusCode = 404, message = $"Department with id {id} is not Found!" });
             return View(dep);
@@ -62,7 +69,7 @@ namespace Company.Wageh.PL.Controllers
         {
             if (id is null)
                 return BadRequest("Invalid Id");
-            var dep = _departmentRepo.Get(id.Value);
+            var dep = _unitOfWork.DepartmentRepository.Get(id.Value);
             if (dep is null)
                 return NotFound(new { StatusCode = 404, message = $"Department with id {id} is not Found!" });
             var department = new CreateDepDto()
@@ -91,7 +98,8 @@ namespace Company.Wageh.PL.Controllers
                     CreateAt = dep.CreateAt,
                 };
                
-                var count = _departmentRepo.Update(department);
+                _unitOfWork.DepartmentRepository.Update(department);
+                int count = _unitOfWork.Complete();
 
                 if (count > 0)
                 {
@@ -105,9 +113,10 @@ namespace Company.Wageh.PL.Controllers
         [ValidateAntiForgeryToken]
         public IActionResult Delete(Department model)
         {
-            Department? dep = _departmentRepo.Get(model.Id);
+            Department? dep = _unitOfWork.DepartmentRepository.Get(model.Id);
             if (dep is null) return BadRequest();
-            _departmentRepo.Delete(dep);
+            _unitOfWork.DepartmentRepository.Delete(dep);
+            _unitOfWork.Complete();
             return RedirectToAction("Index");
         }
 

@@ -28,7 +28,7 @@ namespace Company.Wageh.PL.Dto
         public DateTime CreateAt { get; set; }
         [DisplayName("Department")]
         public int? DepartmentId { get; set; }
-        public Department? Department { get; set; }
+        public string? DepartmentName { get; set; }
        
 
     }

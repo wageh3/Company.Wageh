@@ -1,6 +1,9 @@
-﻿@model CreateEmpDto
+﻿
+@model CreateEmpDto
+@* @inject IDepartmentRepository _departmentRepository *@
 @{
     var Departments = new SelectList(ViewData["Departments"] as IEnumerable<Department>,"Id","Name");
+    // var Departments = new SelectList(_departmentRepository.GetAll(),"Id","Name"); 2
 }
 <div class="my-3">
     <label asp-for="Name" class="col-form-label"></label>
