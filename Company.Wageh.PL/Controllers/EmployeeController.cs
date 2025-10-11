@@ -10,18 +10,22 @@ namespace Company.Wageh.PL.Controllers
 {
     public class EmployeeController : Controller
     {
-        private readonly IEmployeeRepository _employeeRepository;
-        private readonly IDepartmentRepository _departmentRepository; //momken A3mel comment 3lshan hstakhdem l Inject fy l view
+        private readonly IUnitOfWork _unitOfWork;
+
+        //private readonly IEmployeeRepository _employeeRepository;
+        //private readonly IDepartmentRepository _departmentRepository; //momken A3mel comment 3lshan hstakhdem l Inject fy l view
         private readonly IMapper _mapper;
 
         public EmployeeController(
-            IEmployeeRepository employeeRepository ,
-            IDepartmentRepository departmentRepository,
+            //IEmployeeRepository employeeRepository ,
+            //IDepartmentRepository departmentRepository,
+            IUnitOfWork unitOfWork,
             IMapper mapper
             )
         {
-            _employeeRepository = employeeRepository;
-            _departmentRepository = departmentRepository;
+            _unitOfWork = unitOfWork;
+            //_employeeRepository = employeeRepository;
+            //_departmentRepository = departmentRepository;
             _mapper = mapper;
         }
         public IActionResult Index(string? SearchInput)
@@ -29,11 +33,11 @@ namespace Company.Wageh.PL.Controllers
             IEnumerable<Employee> employee;
             if (SearchInput == null)
             {
-                 employee = _employeeRepository.GetAll();
+                 employee = _unitOfWork.EmployeeRepository.GetAll();
             }
             else
             {
-                employee = _employeeRepository.GetByName(SearchInput);
+                employee = _unitOfWork.EmployeeRepository.GetByName(SearchInput);
             }
 
                 return View(employee);
@@ -42,7 +46,7 @@ namespace Company.Wageh.PL.Controllers
         [HttpGet]
         public IActionResult Create()
         {
-            var deps = _departmentRepository.GetAll();
+            var deps = _unitOfWork.DepartmentRepository.GetAll();
             ViewData["Departments"] = deps;
             return View();
         }
@@ -69,7 +73,8 @@ namespace Company.Wageh.PL.Controllers
 
                 //Auto Mapping
                 var employee = _mapper.Map<Employee>(dto);
-                int Count = _employeeRepository.Add(employee);
+                 _unitOfWork.EmployeeRepository.Add(employee);
+                int Count = _unitOfWork.Complete();
                 if (Count > 0)
                 {
                     TempData["Message"] = "Employee is Added Successfully !";
@@ -82,11 +87,11 @@ namespace Company.Wageh.PL.Controllers
         [HttpGet]
         public IActionResult Details(int? id, string ViewName = "Details")
         {
-            var deps = _departmentRepository.GetAll();
+            var deps = _unitOfWork.DepartmentRepository.GetAll();
             ViewData["Departments"] = deps;
             if (id is null)
                 return BadRequest("Invalid Id");
-            Employee? emp = _employeeRepository.Get(id.Value);
+            Employee? emp = _unitOfWork.EmployeeRepository.Get(id.Value);
             if (emp is null)
                 return NotFound(new { StatusCode = 404, message = $"Department with id {id} is not Found!" });
             return View(emp);
@@ -95,10 +100,10 @@ namespace Company.Wageh.PL.Controllers
         [HttpGet]
         public IActionResult Edit(int? id)
         {
-            var deps = _departmentRepository.GetAll();
+            var deps = _unitOfWork.DepartmentRepository.GetAll();
             ViewData["Departments"] = deps;
             if (id is null) return BadRequest("Invalid id");
-            var employee = _employeeRepository.Get(id.Value);
+            var employee = _unitOfWork.EmployeeRepository.Get(id.Value);
             if (employee is null)
                 return NotFound(new { StatusCode = 404, message = $"Employee with id {id} is not Found!" });
             //var employeeDto = new CreateEmpDto()
@@ -142,7 +147,8 @@ namespace Company.Wageh.PL.Controllers
                     Phone = Emp.Phone,
                     Salary = Emp.Salary,
                 };
-                var count = _employeeRepository.Update(employee);
+                 _unitOfWork.EmployeeRepository.Update(employee);
+                var count = _unitOfWork.Complete();
 
                 if (count > 0)
                 {
@@ -154,9 +160,10 @@ namespace Company.Wageh.PL.Controllers
 
         public IActionResult Delete(Employee model)
         {
-            Employee? Emp = _employeeRepository.Get(model.Id);
+            Employee? Emp = _unitOfWork.EmployeeRepository.Get(model.Id);
             if (Emp is null) return BadRequest();
-            _employeeRepository.Delete(Emp);
+            _unitOfWork.EmployeeRepository.Delete(Emp);
+            _unitOfWork.Complete();
             return RedirectToAction("Index");
         }
     }
