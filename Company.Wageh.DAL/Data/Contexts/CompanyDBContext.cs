@@ -7,10 +7,12 @@ using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
+using Microsoft.AspNetCore.Identity;
 
 namespace Company.Wageh.DAL.Data.Contexts
 {
-    public class CompanyDBContext : DbContext
+    public class CompanyDBContext : IdentityDbContext<AppUser>
     {
         public CompanyDBContext(DbContextOptions<CompanyDBContext> options) : base(options)
         {
