@@ -29,30 +29,30 @@ namespace Company.Wageh.PL.Controllers
             //_departmentRepository = departmentRepository;
             _mapper = mapper;
         }
-        public IActionResult Index(string? SearchInput)
+        public async Task<IActionResult> Index(string? SearchInput)
         {
             IEnumerable<Employee> employee;
             if (SearchInput == null)
             {
-                 employee = _unitOfWork.EmployeeRepository.GetAll();
+                 employee = await _unitOfWork.EmployeeRepository.GetAllAsync();
             }
             else
             {
-                employee = _unitOfWork.EmployeeRepository.GetByName(SearchInput);
+                employee = await _unitOfWork.EmployeeRepository.GetByNameAsync(SearchInput);
             }
 
                 return View(employee);
         }
 
         [HttpGet]
-        public IActionResult Create()
+        public async Task<IActionResult> Create()
         {
-            var deps = _unitOfWork.DepartmentRepository.GetAll();
+            var deps = await _unitOfWork.DepartmentRepository.GetAllAsync();
             ViewData["Departments"] = deps;
             return View();
         }
 
-        public IActionResult Create(CreateEmpDto dto)
+        public async Task<IActionResult> Create(CreateEmpDto dto)
         {
             if (ModelState.IsValid)
             {
@@ -78,8 +78,8 @@ namespace Company.Wageh.PL.Controllers
                     dto.ImageName = DocumentSettings.UploadFile(dto.Image, "Images");
                 }
                 var employee = _mapper.Map<Employee>(dto);
-                 _unitOfWork.EmployeeRepository.Add(employee);
-                int Count = _unitOfWork.Complete();
+                 await _unitOfWork.EmployeeRepository.AddAsync(employee);
+                int Count = await _unitOfWork.CompleteAsync();
                 if (Count > 0)
                 {
                     TempData["Message"] = "Employee is Added Successfully !";
@@ -90,9 +90,9 @@ namespace Company.Wageh.PL.Controllers
         }
 
         [HttpGet]
-        public IActionResult Details(int? id, string ViewName = "Details")
+        public async Task<IActionResult> Details(int? id, string ViewName = "Details")
         {
-            var deps = _unitOfWork.DepartmentRepository.GetAll();
+            var deps = await _unitOfWork.DepartmentRepository.GetAllAsync();
             ViewData["Departments"] = deps;
             if (id is null)
                 return BadRequest("Invalid Id");
@@ -103,9 +103,9 @@ namespace Company.Wageh.PL.Controllers
         }
 
         [HttpGet]
-        public IActionResult Edit(int? id)
+        public async Task<IActionResult> Edit(int? id)
         {
-            var deps = _unitOfWork.DepartmentRepository.GetAll();
+            var deps = await _unitOfWork.DepartmentRepository.GetAllAsync();
             ViewData["Departments"] = deps;
             if (id is null) return BadRequest("Invalid id");
             var employee = _unitOfWork.EmployeeRepository.Get(id.Value);
@@ -131,7 +131,7 @@ namespace Company.Wageh.PL.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken] // btmna3 ayy Request gay mn Tool khargya (msmo7 bs b l Requests l btegy mn l web)
-        public IActionResult Edit([FromRoute] int id, CreateEmpDto Emp)
+        public async Task<IActionResult> Edit([FromRoute] int id, CreateEmpDto Emp)
         {
 
             if (ModelState.IsValid)
@@ -164,7 +164,7 @@ namespace Company.Wageh.PL.Controllers
                 employee.Id = id; // set manually because it was ignored
 
                 _unitOfWork.EmployeeRepository.Update(employee);
-                var count = _unitOfWork.Complete();
+                var count = await _unitOfWork.CompleteAsync();
 
                 if (count > 0)
                 {
@@ -179,7 +179,7 @@ namespace Company.Wageh.PL.Controllers
             Employee? Emp = _unitOfWork.EmployeeRepository.Get(model.Id);
             if (Emp is null) return BadRequest(); 
             _unitOfWork.EmployeeRepository.Delete(Emp);
-            _unitOfWork.Complete();
+            _unitOfWork.CompleteAsync();
             if (!string.IsNullOrEmpty(Emp.ImageName))
                 DocumentSettings.DeleteFile(Emp.ImageName, "Images");
             return RedirectToAction("Index");

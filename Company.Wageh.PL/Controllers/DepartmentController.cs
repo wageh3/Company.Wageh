@@ -21,9 +21,9 @@ namespace Company.Wageh.PL.Controllers
             //_departmentRepo = departmentRepository;
         }
         [HttpGet]
-        public IActionResult Index()
+        public async Task<IActionResult> Index()
         {
-            var Department = _unitOfWork.DepartmentRepository.GetAll();
+            var Department = await _unitOfWork.DepartmentRepository.GetAllAsync();
 
             return View(Department);
         }
@@ -33,7 +33,7 @@ namespace Company.Wageh.PL.Controllers
             return View();
         }
         [HttpPost]
-        public IActionResult Create(CreateDepDto dto)
+        public async Task<IActionResult> Create(CreateDepDto dto)
         {
             if (ModelState.IsValid)
             {
@@ -43,8 +43,8 @@ namespace Company.Wageh.PL.Controllers
                     Name = dto.Name,
                     CreateAt = dto.CreateAt,
                 };
-                _unitOfWork.DepartmentRepository.Add(department);
-                int Count = _unitOfWork.Complete();
+                await _unitOfWork.DepartmentRepository.AddAsync(department);
+                int Count = await _unitOfWork.CompleteAsync();
                 if (Count > 0)
                 {
                     return RedirectToAction("Index");
@@ -84,7 +84,7 @@ namespace Company.Wageh.PL.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken] // btmna3 ayy Request gay mn Tool khargya (msmo7 bs b l Requests l btegy mn l web)
-        public IActionResult Edit([FromRoute]int id ,CreateDepDto dep)
+        public async Task<IActionResult> Edit([FromRoute]int id ,CreateDepDto dep)
         {
             
             if (ModelState.IsValid)
@@ -99,7 +99,7 @@ namespace Company.Wageh.PL.Controllers
                 };
                
                 _unitOfWork.DepartmentRepository.Update(department);
-                int count = _unitOfWork.Complete();
+                int count = await _unitOfWork.CompleteAsync();
 
                 if (count > 0)
                 {
@@ -111,12 +111,12 @@ namespace Company.Wageh.PL.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public IActionResult Delete(Department model)
+        public async Task<IActionResult> Delete(Department model)
         {
             Department? dep = _unitOfWork.DepartmentRepository.Get(model.Id);
             if (dep is null) return BadRequest();
             _unitOfWork.DepartmentRepository.Delete(dep);
-            _unitOfWork.Complete();
+            await _unitOfWork.CompleteAsync();
             return RedirectToAction("Index");
         }
 
