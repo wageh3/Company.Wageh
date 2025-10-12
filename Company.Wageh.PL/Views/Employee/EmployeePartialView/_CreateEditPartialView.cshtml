@@ -55,9 +55,16 @@
     <input asp-for="CreateAt" class="form-control" />
     <span asp-validation-for="CreateAt" class="text-danger"></span>
 </div>
+
 <div class="my-3">
     <label asp-for="DepartmentId" class="col-form-label"></label>
     <select asp-for="DepartmentId" asp-items="Departments" class="form-control">
      <option value="@null">--Select Department-- </option>
     </select>
+</div>
+
+<div class="my-3">
+    <label asp-for="Image" class="col-form-label"></label>
+    <input asp-for="Image" class="form-control" />
+    
 </div>

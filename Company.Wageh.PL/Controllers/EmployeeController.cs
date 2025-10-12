@@ -3,6 +3,7 @@ using Company.PL.Dto;
 using Company.Wageh.BLL.Interfaces;
 using Company.Wageh.DAL.Model;
 using Company.Wageh.PL.Dto;
+using Company.Wageh.PL.Helpers;
 using Humanizer;
 using Microsoft.AspNetCore.Mvc;
 
@@ -72,6 +73,10 @@ namespace Company.Wageh.PL.Controllers
                 //};
 
                 //Auto Mapping
+                if (dto.Image is not null)
+                {
+                    dto.ImageName = DocumentSettings.UploadFile(dto.Image, "Images");
+                }
                 var employee = _mapper.Map<Employee>(dto);
                  _unitOfWork.EmployeeRepository.Add(employee);
                 int Count = _unitOfWork.Complete();
@@ -131,23 +136,34 @@ namespace Company.Wageh.PL.Controllers
 
             if (ModelState.IsValid)
             {
-                //if (id != Emp.Id) return BadRequest();
-                var employee = new Employee()
+                if(Emp.ImageName is not null && Emp.Image is not null) 
                 {
-                    Id = id,
-                    Name = Emp.Name,
-                    Age = Emp.Age,
-                    Address = Emp.Address,
-                    CreateAt = Emp.CreateAt,
-                    HiringDate = Emp.HiringDate,
-                    Email = Emp.Email,
-                    IsActive = Emp.IsActive,
-                    IsDeleted = Emp.IsDeleted,
-                    DepartmentId= Emp.DepartmentId,
-                    Phone = Emp.Phone,
-                    Salary = Emp.Salary,
-                };
-                 _unitOfWork.EmployeeRepository.Update(employee);
+                    DocumentSettings.DeleteFile(Emp.ImageName, "Images");
+                }
+                if (Emp.Image is not null) 
+                {
+                    Emp.ImageName = DocumentSettings.UploadFile(Emp.Image,"Images");
+                }
+                //if (id != Emp.Id) return BadRequest();
+                //var employee = new Employee()
+                //{
+                //    Id = id,
+                //    Name = Emp.Name,
+                //    Age = Emp.Age,
+                //    Address = Emp.Address,
+                //    CreateAt = Emp.CreateAt,
+                //    HiringDate = Emp.HiringDate,
+                //    Email = Emp.Email,
+                //    IsActive = Emp.IsActive,
+                //    IsDeleted = Emp.IsDeleted,
+                //    DepartmentId= Emp.DepartmentId,
+                //    Phone = Emp.Phone,
+                //    Salary = Emp.Salary,
+                //};
+                var employee = _mapper.Map<Employee>(Emp);
+                employee.Id = id; // set manually because it was ignored
+
+                _unitOfWork.EmployeeRepository.Update(employee);
                 var count = _unitOfWork.Complete();
 
                 if (count > 0)
@@ -161,9 +177,11 @@ namespace Company.Wageh.PL.Controllers
         public IActionResult Delete(Employee model)
         {
             Employee? Emp = _unitOfWork.EmployeeRepository.Get(model.Id);
-            if (Emp is null) return BadRequest();
+            if (Emp is null) return BadRequest(); 
             _unitOfWork.EmployeeRepository.Delete(Emp);
             _unitOfWork.Complete();
+            if (!string.IsNullOrEmpty(Emp.ImageName))
+                DocumentSettings.DeleteFile(Emp.ImageName, "Images");
             return RedirectToAction("Index");
         }
     }
