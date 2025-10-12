@@ -2,7 +2,9 @@ using Company.Wageh.BLL;
 using Company.Wageh.BLL.Interfaces;
 using Company.Wageh.BLL.Repositories;
 using Company.Wageh.DAL.Data.Contexts;
+using Company.Wageh.DAL.Model;
 using Company.Wageh.PL.Mapping;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 
 namespace Company.Wageh.PL
@@ -25,7 +27,8 @@ namespace Company.Wageh.PL
             });
 
             builder.Services.AddAutoMapper(M => M.AddProfile(new EmployeeProfile()));
-
+            builder.Services.AddIdentity<AppUser, IdentityRole>()
+                            .AddEntityFrameworkStores<CompanyDBContext>();
             var app = builder.Build();
 
             // Configure the HTTP request pipeline.
