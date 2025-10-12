@@ -7,8 +7,9 @@
 <br />
 <br />
 
-<form asp-action="Edit" method="post">
+<form asp-action="Edit" method="post" enctype="multipart/form-data">
     <partial name="EmployeePartialView/_CreateEditPartialView" />
+    <input asp-for="ImageName" hidden/>
     <input type="submit" class="btn btn-primary" value="Update" />
     <a asp-action="Index" class="btn btn-light">Back to list</a>
 </form>
