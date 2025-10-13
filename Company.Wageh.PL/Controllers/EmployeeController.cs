@@ -5,10 +5,12 @@ using Company.Wageh.DAL.Model;
 using Company.Wageh.PL.Dto;
 using Company.Wageh.PL.Helpers;
 using Humanizer;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Company.Wageh.PL.Controllers
 {
+    [Authorize]
     public class EmployeeController : Controller
     {
         private readonly IUnitOfWork _unitOfWork;
