@@ -2,11 +2,12 @@
 using Company.Wageh.BLL.Interfaces;
 using Company.Wageh.DAL.Model;
 using Humanizer;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Company.Wageh.PL.Controllers
 {
-    
+    [Authorize]
     public class DepartmentController : Controller
     {
         private readonly IUnitOfWork _unitOfWork;

@@ -29,6 +29,8 @@ namespace Company.Wageh.PL
             builder.Services.AddAutoMapper(M => M.AddProfile(new EmployeeProfile()));
             builder.Services.AddIdentity<AppUser, IdentityRole>()
                             .AddEntityFrameworkStores<CompanyDBContext>();
+
+            builder.Services.ConfigureApplicationCookie(config => { config.LoginPath = "/Account/SignIn"; });
             var app = builder.Build();
 
             // Configure the HTTP request pipeline.
