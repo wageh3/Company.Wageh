@@ -27,8 +27,10 @@ namespace Company.Wageh.PL
             });
 
             builder.Services.AddAutoMapper(M => M.AddProfile(new EmployeeProfile()));
+
             builder.Services.AddIdentity<AppUser, IdentityRole>()
-                            .AddEntityFrameworkStores<CompanyDBContext>();
+                            .AddEntityFrameworkStores<CompanyDBContext>()
+                            .AddDefaultTokenProviders();
 
             builder.Services.ConfigureApplicationCookie(config => { config.LoginPath = "/Account/SignIn"; });
             var app = builder.Build();
