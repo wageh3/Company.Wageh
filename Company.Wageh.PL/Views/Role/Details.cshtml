@@ -1,0 +1,18 @@
+﻿@model RoleToReturn
+@{
+    ViewData["Title"] = "Details";
+   
+}
+
+
+<h1>Details</h1>
+
+<div class="my-3">
+    <label asp-for="Name" class="col-form-label"></label>
+    <input asp-for="Name" class="form-control" readonly />
+    <span asp-validation-for="Name" class="text-danger"></span>
+</div>
+
+<a asp-action="Index" class="btn btn-light">Back to list</a>
+
+
