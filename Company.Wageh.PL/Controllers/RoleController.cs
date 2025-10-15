@@ -3,16 +3,19 @@ using Company.Wageh.PL.Dto;
 using Company.Wageh.PL.Helpers;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 
 namespace Company.Wageh.PL.Controllers
 {
     public class RoleController : Controller
     {
         private readonly RoleManager<IdentityRole> _roleManager;
+        private readonly UserManager<AppUser> _userManager;
 
-        public RoleController(RoleManager<IdentityRole> roleManager)
+        public RoleController(RoleManager<IdentityRole> roleManager , UserManager<AppUser> userManager)
         {
             _roleManager = roleManager;
+            _userManager = userManager;
         }
         public async Task<IActionResult> Index(string? SearchInput)
         {
@@ -45,23 +48,22 @@ namespace Company.Wageh.PL.Controllers
         [HttpPost]
         public async Task<IActionResult> Create(RoleToReturn model)
         {
-            if (ModelState.IsValid)
+            if(ModelState.IsValid)
             {
                 var role = await _roleManager.FindByNameAsync(model.Name);
                 if(role is null)
                 {
-                    role = new IdentityRole()
+                    role = new IdentityRole() 
                     {
-                        Name = model.Name
+                        Name = model.Name,
                     };
-
                     var result = await _roleManager.CreateAsync(role);
                     if(result.Succeeded)
                     {
                         return RedirectToAction("Index");
                     }
                 }
-                ModelState.AddModelError("", "This Role Is Already Exist !!");
+                ModelState.AddModelError("", "This Role Is Already Exists");
             }
             return View(model);
         }
@@ -73,14 +75,14 @@ namespace Company.Wageh.PL.Controllers
             if (id is null)
                 return BadRequest("Invalid Id");
             var role = await _roleManager.FindByIdAsync(id);
-            if (role is null)
-                return NotFound(new { StatusCode = 404, message = $"User with id {id} is not Found!" });
+            if(role is null)
+                 return NotFound(new { StatusCode = 404, message = $"Role with id {id} is not Found!" });
             var dto = new RoleToReturn()
             {
                 Id = id,
                 Name = role.Name
             };
-            return View(ViewName, dto);
+            return View(ViewName,dto);
         }
 
         [HttpGet]
@@ -143,6 +145,71 @@ namespace Company.Wageh.PL.Controllers
                 ModelState.AddModelError("", "Invalid Operation !!");
             }
             return View(model);
+        }
+        [HttpGet]
+        public async Task<IActionResult> AddOrRemoveUsers(string roleid)
+        {
+            var role = await _roleManager.FindByIdAsync(roleid);
+            if (role is null)
+                return NotFound();
+
+            ViewData["RoleId"] = roleid;
+            var usersInRole = new List<UserInRoleDto>();
+            var users = await _userManager.Users.ToListAsync();
+            if (users is not null)
+            {
+                foreach (var user in users)
+                {
+                    var userinrole = new UserInRoleDto()
+                    {
+                        UserId = user.Id,
+                        UserName = user.UserName,
+                    };
+                    if(await _userManager.IsInRoleAsync(user , role.Name))
+                    {
+                        userinrole.IsSelected = true;
+                    }
+                    else
+                    {
+                        userinrole.IsSelected = false;
+                    }
+                    usersInRole.Add(userinrole);
+                }
+            }
+            else
+            {
+                return BadRequest();
+            }
+            return View(usersInRole);
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> AddOrRemoveUsers(string roleid , List<UserInRoleDto> users)
+        {
+            var role = await _roleManager.FindByIdAsync (roleid);
+            if(role is null)
+                return NotFound();
+            if (ModelState.IsValid)
+            {
+                foreach(var user in users)
+                {
+                    var appuser = await _userManager.FindByIdAsync(user.UserId);
+                    if (appuser is not null) 
+                    {
+                        if (user.IsSelected && !await _userManager.IsInRoleAsync(appuser, role.Name))
+                        {
+                            await _userManager.AddToRoleAsync(appuser, role.Name);
+                        }
+                        else if (!user.IsSelected && await _userManager.IsInRoleAsync(appuser, role.Name))
+                        {
+                            await _userManager.RemoveFromRoleAsync(appuser, role.Name);
+                        }
+                    }
+
+                }
+                return RedirectToAction("Edit",new {id = role.Id});
+            }
+            return View(users);
         }
     }
 }

@@ -8,10 +8,12 @@
 <br />
 <div asp-validation-summary="All" class="text-danger"></div>
 <form asp-action="Edit" method="post" enctype="multipart/form-data">
-    <partial name="EmployeePartialView/_CreateEditPartialView" />
+    <partial name="RolePartialView/_CreateEditPartialView" />
     
     <input type="submit" class="btn btn-primary" value="Update" />
+    <a asp-action="AddOrRemoveUsers" asp-route-roleid="@Model.Id" class="btn btn-info">Add Or Remove Users</a>
     <a asp-action="Index" class="btn btn-light">Back to list</a>
+    
 </form>
 @section ValidationSection {
     <script src="~/lib/jquery-validation/dist/jquery.validate.min.js"></script>
